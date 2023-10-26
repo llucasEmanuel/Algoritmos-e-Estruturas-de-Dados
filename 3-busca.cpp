@@ -40,7 +40,7 @@ int sequentialSearch(int *array, int tam, int element) {
 
 int binarySearch(int *array, int l, int r, int element) { // array deve estar ordenado previamente (nesse caso em ordem crescente)
     if (l <= r) { // ate o array ser repartido em um array unitario
-        int m = (int) ((l + r)) / 2; // indice do meio
+        int m = (l + r) / 2; // indice do meio
         if (array[m] == element) { // achou
             return m;
         }
