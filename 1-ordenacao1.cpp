@@ -74,16 +74,19 @@ void mergeSort(int *array, int l, int r) { // 'l' eh o limite esquerdo (indice 0
         mergeSort(array, m+1, r); // chamada recursiva pra direita
         merge(array, l, r); // quando acabar o loop recursivo ocorre o merge entre as duas metades que ja estao ordenadas
     }    
+    // as chamadas recursivas vao ocorrer ate o fragmento da esquerda ser unitario e depois ele faz o caminho inverso e executa a recursao na segunda metade
+    // quando a segunda recursao acabar, vao ter duas metades ordenadas (ou dois fragmentos unitarios) e o merge vai cuidar em juntar eles de forma ordenada
 }
 
 void merge(int *array, int l, int r) {
     int *temp = new int[r+1]; // criar um array temporario
-    for (int i = l; i <= r; i++) {
+    for (int i = l; i <= r; i++) { // copia os elementos do array do argumento
         temp[i] = array[i];
     }
     int m = (int) ((l+r) / 2); // calcular o meio
     int i1 = l, i2 = m+1; // indices das posicoes iniciais de cada metade
-    for (int curr = l; curr <= r; curr++) {
+    for (int curr = l; curr <= r; curr++) { // usa um cursor que preenche o array com os elementos ordenados
+    // i1 e i2 sao indices que passam pelos elementos de seus respectivos fragmentos e comparam eles entre si
         if (i1 == m+1) { // copiou todos os valores do primeiro fragmento
             array[curr] = temp[i2];
             i2++;
