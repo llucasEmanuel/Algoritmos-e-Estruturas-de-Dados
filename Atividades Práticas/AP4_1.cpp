@@ -1,8 +1,13 @@
+// Header como um node extra (nao considerado no size) e apenas aponta pro primeiro elemento (header é alocado) 
+// head aponta pra header e header->next aponta pro primeiro elemento
+// ponteiro tails aponta pro ultimo node, que aponta pra nullptr
+// ponteiro curr no private para servir como cursor (aponta pro node atual)
+// quando a lista tá vazia, o  head, curr e tail apontam para o header, e header->next = nullptr (nenhum elemento)
+// insere no curr->next
+
 #include <iostream>
 #define endl '\n'
 #define lli long long int
-
-// CORRIGIR IMPLEMENTAÇÃO
 
 using namespace std;
 
