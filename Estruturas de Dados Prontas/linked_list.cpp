@@ -25,10 +25,18 @@ public:
         this->header->next = nullptr;
     }
     ~LinkedList() { // destrutor
-
+        this->clear();
+        delete this->header; // desaloca o header (n vai mais usar)
     }
     void clear() {
-
+        Node<T> *temp = this->header->next; // temp aponta pro primeiro elemento
+        while (temp != nullptr) {
+            Node<T> *removed = temp;
+            temp = temp->next;
+            delete removed;
+        }
+        this->header->next = nullptr;
+        this->size = 0;
     }
     void insert(T value) {
         Node<T> *newNode = new Node<T>;
@@ -44,17 +52,22 @@ public:
         Node<T> *newNode = new Node<T>;
         newNode->value = value;
         newNode->next = nullptr;
+
         this->tail->next = newNode;
+        this->tail = newNode; // o node add eh a cauda agora
+
+        this->size++;
     }
     T remove() { // remove o this->curr->next (a direita do cursor)
         if (this->curr->next == nullptr) { // se nao houver elemento a direita do cursor
-            return nullptr;
+            return T();
         }
-        T removedValue = this->curr->value;
+        T removedValue = this->curr->next->value;
+        Node<T> *temp = this->curr->next;
+
         if (this->tail == this->curr->next) { // removendo o ultimo elemento
             this->tail = this->curr;
         }
-        Node<T> *temp = this->curr->next;
         this->curr->next = this->curr->next->next;
         
         delete temp;
@@ -63,34 +76,113 @@ public:
         return removedValue;
     }
     void moveToStart() {
-
+        this->curr = this->head;
     }
     void moveToEnd() {
-
+        this->curr = this->tail;
     }
     void prev() {
-
+        if (this->curr != this->head) {
+            Node<T> *temp = this->head;
+            while (temp->next != this->curr) { // sai do loop quando o temp tiver no anterior ao curr
+                temp = temp->next;
+            }
+            this->curr = temp;
+        }    
     }
     void next() {
-
+        if (this->curr != this->tail) {
+            this->curr = this->curr->next;
+        }
     }
     int length() {
-        return 1;
+        return this->size;
     }
     int currPos() {
-        return 1;
+        Node<T> *temp = this->head;
+        int count = 0;
+        while (temp != this->curr) {
+            temp = temp->next;
+            count++;
+        }
+
+        return count;
     }
     void moveToPos(int pos) {
-
+        Node<T> *temp = this->head;
+        int count = 0;
+        while (count != pos && temp != nullptr) {
+            temp = temp->next;
+            count++;
+        }
+        this->curr = temp;
     }
     T getValue() {
-
+        if (this->curr->next != nullptr) { // nao for vazio
+            return this->curr->next->value;
+        }
+        return T();
+    }
+    void print() {
+        Node<T> *temp = this->head->next;
+        while (temp != nullptr) {
+            cout << temp->value << ' ';
+            temp = temp->next;
+        }
+        cout << endl;
     }
 };
 
 int main() {
 
+    LinkedList<int> list;
 
+    string comando;
+    while (cin >> comando) {
+        if (comando == "clear") {
+            list.clear();
+        }
+        else if (comando == "insert") {
+            int value;
+            cin >> value;
+            list.insert(value);
+        }
+        else if (comando == "remove") {
+            list.remove();
+        }
+        else if (comando == "append") {
+            int value;
+            cin >> value;
+            list.append(value);
+        }
+        else if (comando == "moveToStart") {
+            list.moveToStart();
+        }
+        else if (comando == "moveToEnd") {
+            list.moveToEnd();
+        }
+        else if (comando == "next") {
+            list.next();
+        }
+        else if (comando == "prev") {
+            list.prev();
+        }
+        else if (comando == "length") {
+            cout << "(size = " << list.length() << ")\n";
+        }
+        else if (comando == "currPos") {
+            cout << "(currPos = " << list.currPos() << ")\n";
+        }
+        else if (comando == "moveToPos") {
+            int pos;
+            cin >> pos;
+            list.moveToPos(pos);
+        }
+        else if (comando == "getValue") {
+            cout << "(currValue = " << list.getValue() << ")\n";
+        }   
+        list.print();
+    }
 
     return 0;
 }
