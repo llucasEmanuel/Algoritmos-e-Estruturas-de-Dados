@@ -14,6 +14,8 @@ private:
     Node<T> *curr; // aponta pro node onde esta o cursor
     Node<T> *tail; // aponta pra cauda da lista
     Node<T> *header; // node vazio que todos apontam (nao conta como elemento)
+    // n precisa do header declarado aqui
+    //header eh o Node alocado pelo head e o next dele é o primeiro elemento
     int size;
 public:
     LinkedList() { // construtor
