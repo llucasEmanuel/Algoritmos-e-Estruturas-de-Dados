@@ -1,116 +1,157 @@
-// Header como um node extra (nao considerado no size) e apenas aponta pro primeiro elemento (header é alocado) 
-// head aponta pra header e header->next aponta pro primeiro elemento
-// ponteiro tails aponta pro ultimo node, que aponta pra nullptr
-// ponteiro curr no private para servir como cursor (aponta pro node atual)
-// quando a lista tá vazia, o  head, curr e tail apontam para o header, e header->next = nullptr (nenhum elemento)
-// insere no curr->next
-
 #include <iostream>
 #define endl '\n'
-#define lli long long int
 
 using namespace std;
 
 template <typename T> struct Node {
     T value;
-    Node *next;
+    Node<T> *next;
 };
 
 template <typename T> class LinkedList {
 private:
-    Node<T> *head;
-    int curr;
+    Node<T> *head; // aponta pro header
+    Node<T> *curr; // aponta pro node onde esta o cursor
+    Node<T> *tail; // aponta pra cauda da lista
+    Node<T> *header; // node vazio que todos apontam (nao conta como elemento)
     int size;
 public:
-    LinkedList() { // inicializa a lista como vazia
-        this->head = nullptr;
-        this->curr = 0;
+    LinkedList() { // construtor
+        this->header = new Node<T>;
+        this->head = this->header;
+        this->curr = this->header;
+        this->tail = this->header;
         this->size = 0;
-    };
-    ~LinkedList() { // deleta os ponteiros
-        Node<T> *curr = this->head;
-        Node<T> *nextNode;
-        while (curr != nullptr) {
-            nextNode = curr->next;
-            delete curr;
-            curr = nextNode;
+        this->header->next = nullptr;
+    }
+    ~LinkedList() { // destrutor
+        this->clear();
+        delete this->header; // desaloca o header (n vai mais usar)
+    }
+    void clear() {
+        Node<T> *temp = this->header->next; // temp aponta pro primeiro elemento
+        while (temp != nullptr) {
+            Node<T> *removed = temp;
+            temp = temp->next;
+            delete removed;
         }
+        this->header->next = nullptr;
+        this->size = 0;
     }
     void insert(T value) {
-        if (this->head != nullptr) {
-            Node<T> *curr = this->head;
-            int count = 0;
-            while (count < this->curr) {
-                curr = curr->next; // move o ponteiro pro cursor
-                count++;
-            }
-            // count termina com o indice do cursor
-            Node<T> *newNode = new Node<T>;
-            newNode->value = value;
-            newNode->next = curr->next;
-            curr->next = newNode; 
-            this->size++;
+        Node<T> *newNode = new Node<T>;
+        newNode->value = value;
+        newNode->next = this->curr->next;
+        this->curr->next = newNode;
+        if (this->tail == this->curr) { // se inserir no ultimo tem que mover a cauda
+            this->tail = this->curr->next;
         }
-        else { // se tiver vazio
-            this->head = new Node<T>;
-            this->head->value = value;
-            this->head->next = nullptr; // nullptr pq é o ultmo node da lista
-            this->size++;
-        }
+        this->size++;
     }
-    T remove() {
-        if (this->head != nullptr && this->size > 0 && this->curr < this->size - 1) { // se a lista nao estiver vazia
-            Node<T> *curr = this->head;
-            int count = 0;
-            while (count < this->curr - 1) { 
-                curr = curr->next;
-                count++;
-            }
-            // curr aponta pro node anterior ao do cursor
-            Node<T> *removedNode = curr->next;
-            T removedValue = removedNode->value;
-            curr->next = curr->next->next;
+    void append(T value) {
+        Node<T> *newNode = new Node<T>;
+        newNode->value = value;
+        newNode->next = nullptr;
 
-            delete removedNode;
+        this->tail->next = newNode;
+        this->tail = newNode; // o node add eh a cauda agora
 
-            this->size--;
-            return removedValue;
-        }
-        else {
+        this->size++;
+    }
+    T remove() { // remove o this->curr->next (a direita do cursor)
+        if (this->curr->next == nullptr) { // se nao houver elemento a direita do cursor
             return T();
         }
+        T removedValue = this->curr->next->value;
+        Node<T> *temp = this->curr->next;
+
+        if (this->tail == this->curr->next) { // removendo o ultimo elemento
+            this->tail = this->curr;
+        }
+        this->curr->next = this->curr->next->next;
+        
+        delete temp;
+        this->size--;
+
+        return removedValue;
     }
-    int count(T value) {
-        Node<T> *curr = this->head;
+    void moveToStart() {
+        this->curr = this->head;
+    }
+    void moveToEnd() {
+        this->curr = this->tail;
+    }
+    void prev() {
+        if (this->curr != this->head) {
+            Node<T> *temp = this->head;
+            while (temp->next != this->curr) { // sai do loop quando o temp tiver no anterior ao curr
+                temp = temp->next;
+            }
+            this->curr = temp;
+        }    
+    }
+    void next() {
+        if (this->curr != this->tail) {
+            this->curr = this->curr->next;
+        }
+    }
+    int length() {
+        return this->size;
+    }
+    int currPos() {
+        Node<T> *temp = this->head;
         int count = 0;
-        while (curr != nullptr) {
-            if (curr->value == value) {
+        while (temp != this->curr) {
+            temp = temp->next;
+            count++;
+        }
+
+        return count;
+    }
+    void moveToPos(int pos) {
+        Node<T> *temp = this->head;
+        int count = 0;
+        while (count != pos && temp != nullptr) {
+            temp = temp->next;
+            count++;
+        }
+        this->curr = temp;
+    }
+    T getValue() {
+        if (this->curr->next != nullptr) { // nao for vazio
+            return this->curr->next->value;
+        }
+        return T();
+    }
+    void print() {
+        Node<T> *temp = this->head->next;
+        while (temp != nullptr) {
+            cout << temp->value << ' ';
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+    int count (T value) {
+        Node<T> *temp = this->head->next;
+        int count = 0;
+        while (temp != nullptr) {
+            if (temp->value == value) {
                 count++;
             }
-            curr = curr->next;
+            temp = temp->next;
         }
         return count;
     }
-    void prev() {
-        if (this->curr > 0) {
-            this->curr--;
-        }
-    }
-    void next() {
-        if (this->curr < this->size - 1) {
-            this->curr++;
-        }
-    }
-
 };
 
 int main() {
 
-    LinkedList<int> lista;
+    LinkedList<int> list;
 
     int casos;
     cin >> casos;
     for (int i = 0; i < casos; i++) {
+        cout << "Caso " << i+1 << ":\n";
         int operacoes;
         cin >> operacoes;
         for (int j = 0; j < operacoes; j++) {
@@ -119,21 +160,21 @@ int main() {
             if (comando == "insert") {
                 int value;
                 cin >> value;
-                lista.insert(value);
+                list.insert(value);
             }
             else if (comando == "remove") {
-                lista.remove();
+                list.remove();
             }
             else if (comando == "count") {
                 int value;
                 cin >> value;
-                cout << lista.count(value) << endl;
-            }
-            else if (comando == "prev") {
-                lista.prev();
+                cout << list.count(value) << endl;
             }
             else if (comando == "next") {
-                lista.next();
+                list.next();
+            }
+            else if (comando == "prev") {
+                list.prev();
             }
         }
     }
