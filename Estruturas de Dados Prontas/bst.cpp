@@ -18,115 +18,107 @@ public:
     }
 };
 
-template <typename K, typename V> V find_aux(Node<K, V> *root, K key) {
-    if (root == nullptr) { // chegou no ultimo node e nao achou a chave
-        return V();
-    }
-
-    if (key == root->key) {
-        return root->value;
-    }
-    else if (key > root->key) {
-        return find_aux(root->right, key);
-    }
-    else {
-        return find_aux(root->left, key);
-    }
-}
-
-template <typename K, typename V> Node<K, V> *insert_aux(Node<K, V> *root, K key, V value) {
-    if (root == nullptr) {
-        return new Node<K, V>(key, value);
-    }
-
-    if (key < root->key) {
-        root->left = insert_aux(root->left, key, value);
-    }
-    else {
-        root->right = insert_aux(root->right, key, value);
-    }
-    return root; // serve pra volta da recursao
-}
-
-template <typename K, typename V> Node<K, V> *get_min(Node<K, V> *root) {
-    if (root->left == nullptr) {
-        return root;
-    }
-    return get_min(root->left);
-}
-
-template <typename K, typename V> Node<K, V> *delete_min(Node<K, V> *root) {
-    if (root->left == nullptr) {
-        return root->right;
-    }
-    root->left = delete_min(root->left);
-    return root;
-}
-
-template <typename K, typename V> Node<K, V> *remove_aux(Node<K, V> *root, K key) {
-    if (root == nullptr) {
-        return nullptr;
-    }
-
-    if (key < root->key) {
-        root->left = remove_aux(root->left, key);
-    }
-    else if (key > root->key) {
-        root->right = remove_aux(root->right, key);
-    }
-    else {
-        if (root->left == nullptr) {
-            return root->right;
-        }
-        else if (root->right == nullptr) {
-            return root->left;
-        }
-        else {
-            Node<K, V> *temp = get_min(root->right);
-            root->value = temp->value;
-            root->key = temp->key;
-            root->right = delete_min(root->right);
-        }
-    }
-    return root;
-}
-
-template <typename K, typename V> void print_preorder(Node<K, V> *root) {
-    if (root != nullptr) {
-        cout << root->key << ": " << root->value << endl;
-        print_preorder(root->left);
-        print_preorder(root->right);
-    }
-}
-
-template <typename K, typename V> void print_inorder(Node<K, V> *root) {
-    if (root != nullptr) {
-        print_inorder(root->left);
-        cout << root->key << ": " << root->value << endl;
-        print_inorder(root->right);
-    }
-}
-
-template <typename K, typename V> void print_posorder(Node<K, V> *root) {
-    if (root != nullptr) {
-        print_posorder(root->left);
-        print_posorder(root->right);
-        cout << root->key << ": " << root->value << endl;
-    }
-}
-
-template <typename K, typename V> void delete_tree(Node<K, V> *root) {
-    if (root != nullptr) { // em posorder
-        delete_tree(root->left);
-        delete_tree(root->right);
-        delete root;
-    }
-}
-
 template <typename K, typename V> class Dictionary { // dicionario implementado como BST
 private:
     Node<K, V> *root;
     int node_count;
+
+    V find_aux(Node<K, V> *rt, K k) {
+        if (rt == nullptr) { // chegou no ultimo node e nao achou a chave
+            return V();
+        }
+
+        if (k == rt->key) {
+            return rt->value;
+        }
+        else if (k > rt->key) {
+            return find_aux(rt->right, k);
+        }
+        else {
+            return find_aux(rt->left, k);
+        }
+    }
+    Node<K, V> *insert_aux(Node<K, V> *rt, K k, V v) {
+        if (rt == nullptr) {
+            return new Node<K, V>(k, v);
+        }
+
+        if (k < rt->key) {
+            rt->left = insert_aux(rt->left, k, v);
+        }
+        else {
+            rt->right = insert_aux(rt->right, k, v);
+        }
+        return rt; // serve pra volta da recursao
+    }
+    Node<K, V> *get_min(Node<K, V> *rt) {
+        if (rt->left == nullptr) {
+            return rt;
+        }
+        return get_min(rt->left);
+    }
+    Node<K, V> *delete_min(Node<K, V> *rt) {
+        if (rt->left == nullptr) {
+            return rt->right;
+        }
+        rt->left = delete_min(rt->left);
+        return rt;
+    }
+    Node<K, V> *remove_aux(Node<K, V> *rt, K k) {
+        if (rt == nullptr) {
+            return nullptr;
+        }
+
+        if (k < rt->key) {
+            rt->left = remove_aux(rt->left, k);
+        }
+        else if (k > rt->key) {
+            rt->right = remove_aux(rt->right, k);
+        }
+        else {
+            if (rt->left == nullptr) {
+                return rt->right;
+            }
+            else if (rt->right == nullptr) {
+                return rt->left;
+            }
+            else {
+                Node<K, V> *temp = get_min(rt->right);
+                rt->value = temp->value;
+                rt->key = temp->key;
+                rt->right = delete_min(rt->right);
+            }
+        }
+        return rt;
+    }
+    void print_preorder(Node<K, V> *rt) {
+        if (rt != nullptr) {
+            cout << rt->key << ": " << rt->value << endl;
+            print_preorder(rt->left); // faz a recursao sem o this
+            print_preorder(rt->right);
+        }
+    }
+    void print_inorder(Node<K, V> *rt) {
+        if (rt != nullptr) {
+            print_inorder(rt->left);
+            cout << rt->key << ": " << rt->value << endl;
+            print_inorder(rt->right);
+        }
+    }
+    void print_posorder(Node<K, V> *rt) {
+        if (rt != nullptr) {
+            print_posorder(rt->left);
+            print_posorder(rt->right);
+            cout << rt->key << ": " << rt->value << endl;
+        }
+    }
+    void delete_tree(Node<K, V> *rt) {
+        if (rt != nullptr) { // em posorder
+            this->delete_tree(rt->left);
+            this->delete_tree(rt->right);
+            delete rt;
+        }
+    }
 public:
     Dictionary() { // construtor
         this->root = nullptr;
