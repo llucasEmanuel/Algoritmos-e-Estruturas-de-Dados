@@ -5,7 +5,6 @@
 
 using namespace std;
 
-//BOTTOM UP // ja conhece todos os elementos de antemao
 template <typename T> class PriorityQueue { // implementado como heap
 private:
     int size;
