@@ -40,8 +40,8 @@ public:
         this->heap.emplace_back(); // add o primeiro elemento qualquer na heap
     }
     void insert(T value) {
-        this->heap.push_back(value);
         this->size++;
+        this->heap[this->size] = value;
         this->heapify();
     }
     T find_max() {
