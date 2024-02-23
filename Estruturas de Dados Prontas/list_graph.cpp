@@ -1,3 +1,16 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <list>
+#include <stack>
+#include <algorithm>
+#define endl '\n'
+// Considerar um grafo de até 10^5 vertices e arestas de 0 a 10^2
+// Logo a maior soma possivel de custo de arestas é 10^5 * 10^2 = 10^7
+// "Infinito" = 10^7 + 1
+
+using namespace std;
+
 class Graph {
 private:
     vector<list<pair<int, int>>> adj; // adjacency list (vertex, weight)
