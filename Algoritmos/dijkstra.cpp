@@ -158,15 +158,13 @@ void Dijkstra(Graph &g, int s, vector<int> &dist) {
     priority_queue<Triple, vector<Triple>, CompareTriple> heap;
     heap.push(Triple(s, s, 0)); dist[s] = 0;
     for (int i = 0; i < g.n(); i++) {
-        Triple t; // inicializou tudo com 0 por padrão
-        while(true) {
+        Triple t;
+        do {
             if (heap.empty()) return; // encerra a execução do algoritmo
-            if (g.get_mark(t.second) == false) break;
-            t = heap.top(); // atribui o topo
+            t = heap.top();
             heap.pop();
-        }
-        g.set_mark(t.second, true); 
-        pred[t.second] = t.first;
+        } while (g.get_mark(t.second) == true);
+        g.set_mark(t.second, true); pred[t.second] = t.first;
         int w = g.first(t.second);
         while (w < g.n()) {
             if (g.get_mark(w) != true && dist[w] > dist[t.second] + g.weight(t.second, w)) {
